@@ -79,7 +79,7 @@ export default {
 /* Button addPhoto */
 
 .addPhoto {
-  padding: 13px 20px 13px;
+  padding: 13px 20px;
   margin-bottom: 20px;
   border-radius: 15px;
   border: 2px solid black;
