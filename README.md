@@ -1,16 +1,17 @@
 # photo-gallery
 
-This template should help get you started developing with Vue 3 in Vite.
+Unsplash image viewer app for FrontEnd NUWE Challenge
 
-## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Local Installation
 
-## Customize configuration
+### Clone the repo
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+```sh
+git clone https://github.com/wavesforweirdos/photo-gallery
+```
 
-## Project Setup
+### Install dependencies
 
 ```sh
 npm install
