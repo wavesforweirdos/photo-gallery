@@ -8,16 +8,19 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style>
-  @import url('https://fonts.googleapis.com/css?family=Roboto');
+  @import url('https://fonts.googleapis.com/css?family=Quicksand');
 
-  html { font-size: 22px; }
-  body { font-family: 'Roboto', sans-serif; }
+html {
+  font-size: 15px;
+}
 
-  a {
-    color: #0094FF;
-    text-decoration: none;
-  }
+body {
+  font-family: "Quicksand", sans-serif;
+}
 
-  a:hover { color: #0074C6; }
+a {
+  text-decoration: none;
+  color: slateblue;
+}
 </style>
 
