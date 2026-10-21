@@ -11,14 +11,12 @@
 
 Gallery that browses photos from the [Unsplash API](https://unsplash.com/developers). Search by keyword, load more results and open any photo to see its detail.
 
-![Photo detail with description and author attribution](docs/screenshot-detail.jpg)
-
 ## Features
 
 - Search Unsplash photos by keyword, with the term kept in the URL so searches can be shared
 - "Load more" pagination (30 photos per page)
-- Mosaic grid with lightweight thumbnails and loading skeletons; the most liked photos of each batch are wider, and every row keeps the same height
-- Photo detail view with description, location and author attribution; close it with `Esc`
+- Mosaic grid with thumbnails and loading skeletons; the most liked photos of each batch are wider, and every row keeps the same height
+- Photo detail view with description, location and author attribution; close it with the round button or `Esc`
 - Clear messages for empty results, errors and Unsplash's rate limit (50 requests/hour in demo mode)
 
 ## Technologies
