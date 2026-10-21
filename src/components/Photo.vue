@@ -43,7 +43,7 @@ export default {
                 })
         },
         closeImagebox() {
-            this.$router.push('/');
+            this.$router.push({ path: '/', query: this.$route.query })
         },
     },
     created() {
@@ -72,12 +72,30 @@ export default {
     background-color: rgba(0, 0, 0, 0.8);
     display: grid;
     grid-template-columns: repeat(4, 25% [col-start]);
+    overflow-y: auto;
 }
 .image-content{
     grid-column: 2 / span 2;
-    grid-row: 2;
+    grid-row: 1;
     display: flex;
     flex-direction: column;
+    align-self: start;
+    margin: 2rem 0;
+}
+
+.image-content img {
+    display: block;
+    width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+    background-color: #000000;
+}
+
+@media (max-width: 768px) {
+    .image-content {
+        grid-column: 1 / span 4;
+        margin: 0;
+    }
 }
 
 .image-info {
