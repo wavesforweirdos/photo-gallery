@@ -58,6 +58,17 @@ export default {
             this.$router.push({ path: '/', query: this.$route.query })
         },
     },
+    watch: {
+        // Router reuses this component when only the id changes (e.g. editing the URL or history navigation)
+        '$route.params.id'() {
+            this.photoURL = ''
+            this.user = null
+            this.description = ''
+            this.city = ''
+            this.error = ''
+            this.fetchPhoto()
+        },
+    },
     created() {
         this.fetchPhoto()
     },

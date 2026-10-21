@@ -16,7 +16,7 @@
           <div class="username">@{{ photo.user.username }}</div>
         </div>
         <img :src="thumb(photo, 400)" :srcset="srcset(photo)" :sizes="sizes(photo)" :alt="photo.alt_description || ''"
-          :loading="index < 4 ? 'eager' : 'lazy'" :fetchpriority="index === 0 ? 'high' : undefined">
+          :loading="index < EAGER_TILES ? 'eager' : 'lazy'" :fetchpriority="index === 0 ? 'high' : undefined" decoding="async">
       </router-link>
       <template v-if="loading && !photos.length">
         <div v-for="n in 12" :key="`skeleton-${n}`" class="skeleton"></div>
@@ -36,6 +36,11 @@ import { unsplashGet, errorMessage, UNSPLASH_URL } from '../unsplash'
 import { assignSizes } from '../sizes'
 
 const THUMB_WIDTHS = [400, 800, 1200]
+// Width / height of a regular and of a wide (two-column) tile
+const TILE_RATIO = 1.3
+const WIDE_RATIO = 2.6
+// Tiles that can be in the first screen (mobile included) load eagerly; the rest are lazy
+const EAGER_TILES = 8
 
 const PER_PAGE = 30
 
@@ -51,6 +56,7 @@ export default {
       loading: false,
       error: '',
       unsplashUrl: UNSPLASH_URL,
+      EAGER_TILES,
     }
   },
   methods: {
@@ -87,8 +93,10 @@ export default {
       }
     },
     // Unsplash resizes on the fly through the `raw` URL, so the grid never downloads full-size images
+    // Cropped to the tile's proportions on the server, so no pixels are downloaded just to be hidden by object-fit
     thumb(photo, width) {
-      return `${photo.urls.raw}&w=${width}&q=70&fm=webp&fit=max`
+      const ratio = photo.size === 'wide' ? WIDE_RATIO : TILE_RATIO
+      return `${photo.urls.raw}&w=${width}&h=${Math.round(width / ratio)}&fit=crop&q=60&fm=webp`
     },
     srcset(photo) {
       return THUMB_WIDTHS.map(width => `${this.thumb(photo, width)} ${width}w`).join(', ')
@@ -131,6 +139,7 @@ export default {
 
 .search input {
   flex: 1;
+  min-width: 0; /* lets the input shrink so the form never overflows on narrow screens */
   padding: 13px 20px;
   border-radius: 15px;
   border: 2px solid black;
