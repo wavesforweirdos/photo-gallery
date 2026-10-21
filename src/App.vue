@@ -11,6 +11,14 @@ import Gallery from './components/Gallery.vue'
 </template>
 
 <style>
+@font-face {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/quicksand-latin-wght-normal.woff2") format("woff2");
+}
+
 html {
   font-size: 15px;
 }
