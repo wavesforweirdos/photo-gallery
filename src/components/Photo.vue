@@ -2,7 +2,6 @@
     <div ref="box" class="image-box" role="dialog" aria-modal="true" aria-label="Photo detail" tabindex="-1"
         @click.self="closeImagebox" @keydown.esc="closeImagebox">
         <div class="image-content">
-            <button ref="close" type="button" class="image-close" aria-label="Close photo" @click="closeImagebox">✕</button>
             <p v-if="error" class="image-error" role="alert">{{ error }}</p>
             <img v-else-if="photoURL" :src="photoURL" :alt="description">
             <div class="image-info">
@@ -14,6 +13,7 @@
                     on
                     <a :href="unsplashUrl" target="_blank" rel="noopener">Unsplash</a>
                 </p>
+                <button ref="close" type="button" class="image-close" @click="closeImagebox">Close</button>
             </div>
         </div>
     </div>
@@ -84,7 +84,6 @@ export default {
 
 /* The card is as wide as the photo, so the caption matches its width */
 .image-content {
-    position: relative;
     display: flex;
     flex-direction: column;
     width: fit-content;
@@ -109,22 +108,20 @@ export default {
 }
 
 .image-close {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 0;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.95);
+    margin-top: 1rem;
+    padding: 10px 24px;
+    border: 2px solid #111111;
+    border-radius: 15px;
+    background-color: transparent;
     color: #111111;
     font: inherit;
-    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
 }
 
 .image-close:hover {
-    background-color: #FFFFFF;
+    background-color: #111111;
+    color: #FFFFFF;
 }
 
 .image-error {
