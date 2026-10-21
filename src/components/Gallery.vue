@@ -40,8 +40,8 @@ export default {
   data() {
     return {
       photos: [],
-      query: this.$route.query.q || '',
-      activeQuery: this.$route.query.q || '',
+      query: '',
+      activeQuery: '',
       page: 1,
       totalPages: 1,
       loading: false,
@@ -89,7 +89,10 @@ export default {
       return text ? text[0].toUpperCase() + text.slice(1) : ''
     },
   },
-  created() {
+  async created() {
+    // The gallery is mounted before the router resolves the initial URL, so wait for it to read ?q=
+    await this.$router.isReady()
+    this.query = this.activeQuery = this.$route.query.q || ''
     this.fetchPhotos()
   },
 
@@ -130,6 +133,13 @@ export default {
 
 .search button:hover {
   opacity: 0.85;
+}
+
+/* The browser's own clear button duplicates ours */
+.search input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .search .clear {
@@ -223,15 +233,6 @@ export default {
 
 .gallery .wide {
   grid-column: span 2;
-}
-
-.gallery .tall {
-  grid-row: span 2;
-}
-
-.gallery .big {
-  grid-column: span 2;
-  grid-row: span 2;
 }
 
 .gallery .information {
