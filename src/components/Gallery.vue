@@ -2,90 +2,91 @@
   <div class="container">
     <form class="search" @submit.prevent="search">
       <input v-model="query" type="search" placeholder="Search photos (e.g. mountains)" aria-label="Search photos">
+      <button v-if="query" type="button" class="clear" aria-label="Clear search" @click="clear">✕</button>
       <button type="submit">Search</button>
     </form>
-    <p v-if="loading" class="status">Loading…</p>
-    <p v-else-if="error" class="status">Could not load photos. Please try again.</p>
-    <p v-else-if="!photos.length" class="status">No photos found.</p>
-    <div class="gallery">
+    <p v-if="error" class="status error" role="alert">{{ error }}</p>
+    <p v-else-if="!loading && !photos.length" class="status">No photos found.</p>
+    <div class="gallery" :aria-busy="loading">
       <router-link v-for="photo in photos" :key="photo.id" :to="{ path: `/photo/${photo.id}`, query: $route.query }"
-        v-bind:class="bindPhotoClass(photo.likes)">
+        :class="photo.size">
         <div class="information">
           <div class="description">{{ showDescription(photo) }}</div>
           <div class="username">@{{ photo.user.username }}</div>
         </div>
         <img :src="photo.urls.small" :alt="photo.alt_description || ''" loading="lazy">
       </router-link>
+      <template v-if="loading && !photos.length">
+        <div v-for="n in 12" :key="`skeleton-${n}`" class="skeleton"></div>
+      </template>
     </div>
+    <button v-if="page < totalPages && photos.length" class="load-more" :disabled="loading" @click="loadMore">
+      {{ loading ? 'Loading…' : 'Load more' }}
+    </button>
+    <p class="credit">
+      Photos from <a :href="unsplashUrl" target="_blank" rel="noopener">Unsplash</a>
+    </p>
   </div>
 </template>
 
-
 <script>
+import { unsplashGet, errorMessage, UNSPLASH_URL } from '../unsplash'
+import { assignSizes } from '../sizes'
+
+const PER_PAGE = 30
+
 export default {
   name: 'GalleryComponent',
   data() {
     return {
       photos: [],
-      photoURL: '',
-      description: '',
-      city: '',
-      accesKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
-      query: this.$route.query.q || 'random',
+      query: this.$route.query.q || '',
+      activeQuery: this.$route.query.q || '',
+      page: 1,
+      totalPages: 1,
       loading: false,
-      error: false,
-      url: 'https://api.unsplash.com/search/photos',
+      error: '',
+      unsplashUrl: UNSPLASH_URL,
     }
   },
   methods: {
     search() {
-      this.query = this.query.trim() || 'random'
-      this.$router.replace({ query: { q: this.query } })
+      this.query = this.query.trim()
+      this.activeQuery = this.query
+      this.$router.replace({ query: this.query ? { q: this.query } : {} })
       this.fetchPhotos()
     },
-    fetchPhotos() {
-      const params = new URLSearchParams({
-        per_page: 30,
-        query: this.query,
-        client_id: this.accesKey,
-      })
-      this.loading = true
-      this.error = false
-      fetch(`${this.url}?${params}`)
-        .then(response => {
-          if (!response.ok) throw new Error(response.status)
-          return response.json()
-        })
-        .then((json) => {
-          this.photos = json.results
-        }).catch(() => {
-          this.photos = []
-          this.error = true
-        }).finally(() => {
-          this.loading = false
-        })
+    clear() {
+      this.query = ''
+      this.search()
     },
-    bindPhotoClass(likes) {
-      if (likes <= 6000) {
-        return ' '
-      } else if (likes <= 7000) {
-        return 'wide'
-      } else if (likes <= 8000) {
-        return 'tall'
-      } else {
-        return 'big'
+    loadMore() {
+      this.fetchPhotos(this.page + 1)
+    },
+    async fetchPhotos(page = 1) {
+      this.loading = true
+      this.error = ''
+      if (page === 1) this.photos = []
+      try {
+        const json = await unsplashGet('/search/photos', {
+          query: this.activeQuery || 'random',
+          per_page: PER_PAGE,
+          page,
+        })
+        this.photos = [...this.photos, ...assignSizes(json.results)]
+        this.page = page
+        this.totalPages = json.total_pages
+      } catch (err) {
+        this.error = errorMessage(err)
+      } finally {
+        this.loading = false
       }
     },
     showDescription(photo) {
-      if (!photo.description && !photo.alt_description) {
-        return ''
-      } else if (!photo.description) {
-        return photo.alt_description[0].toUpperCase() + photo.alt_description.slice(1)
-      } else if (photo.description.length < 150) {
-        return photo.description[0].toUpperCase() + photo.description.slice(1)
-      } else {
-        return photo.alt_description[0].toUpperCase() + photo.alt_description.slice(1)
-      }
+      const text = photo.description && photo.description.length < 150
+        ? photo.description
+        : photo.alt_description || photo.description || ''
+      return text ? text[0].toUpperCase() + text.slice(1) : ''
     },
   },
   created() {
@@ -131,8 +132,56 @@ export default {
   opacity: 0.85;
 }
 
+.search .clear {
+  background-color: transparent;
+  color: black;
+  padding: 13px 16px;
+}
+
 .status {
   text-align: center;
+}
+
+.status.error {
+  color: #b00020;
+}
+
+.load-more {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 13px 28px;
+  border-radius: 15px;
+  border: 2px solid black;
+  background-color: slateblue;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.load-more:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.credit {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: small;
+}
+
+/* Skeleton */
+
+.gallery .skeleton {
+  border-radius: 15px;
+  background: linear-gradient(90deg, #eee 25%, #f6f6f6 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
 }
 
 /* Gallery */
