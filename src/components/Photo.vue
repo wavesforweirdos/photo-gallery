@@ -23,8 +23,7 @@ export default {
             fetch(this.url + this.$route.params.id + '/?&client_id=' + this.accesKey)
                 .then(response => response.json())
                 .then((json) => {
-                    console.log(json)
-                    this.photoURL = json.urls.full
+                    this.photoURL = json.urls.regular
                     this.user = json.user
 
                     if (!json.description && !json.alt_description) {
@@ -35,12 +34,12 @@ export default {
                         this.description = json.alt_description[0].toUpperCase() + json.alt_description.slice(1)
                     }
 
-                    if (json.location.name) {
+                    if (json.location && json.location.name) {
                         this.city = json.location.name
                     }
 
                 }).catch((err) => {
-                    console.log('error', err)
+                    console.error('Could not load photo', err)
                 })
         },
         closeImagebox() {
