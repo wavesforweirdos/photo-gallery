@@ -26,7 +26,7 @@ export default {
       photoURL: '',
       description: '',
       city: '',
-      accesKey: '-hmPsUWIESwXL5s88SIL1UjmeC2U-hdlZ9rOWDKnzHY',
+      accesKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
       url: 'https://api.unsplash.com/search/photos?per_page=30&oder_by=oldest&query=random&client_id=',
     }
   },

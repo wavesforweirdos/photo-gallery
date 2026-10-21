@@ -4,32 +4,30 @@
 
 **[![CodeFactor](https://www.codefactor.io/repository/github/wavesforweirdos/photo-gallery/badge)](https://www.codefactor.io/repository/github/wavesforweirdos/photo-gallery)**
 
-## Installation
+**Demo:** https://wavesforweirdos.github.io/photo-gallery/
+
+Gallery built with Vue 3, Vue Router and Vite that browses photos from the [Unsplash API](https://unsplash.com/developers). Click a photo to see its detail.
+
+## Getting started
 
 ```sh
-# Clone the repo (for local installation)
 git clone https://github.com/wavesforweirdos/photo-gallery
-```
-
-```sh
-# Install dependencies
+cd photo-gallery
 npm install
-```
-
-```sh
-# Compile and Hot-Reload for Development
+cp .env.example .env   # add your Unsplash access key
 npm run dev
 ```
 
-```sh
-# Compile and Minify for Production
-npm run build
-```
+| Script | Description |
+|---|---|
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | Lint with [ESLint](https://eslint.org/) |
 
-```sh
-#Lint with [ESLint](https://eslint.org/)
-npm run lint
-```
+## Deployment
+
+Every push to `main` is built and published to GitHub Pages by `.github/workflows/deploy.yml`. The Unsplash key is read from the `VITE_UNSPLASH_ACCESS_KEY` repository secret. Note that any key used in a client-side app ends up in the bundle, so use a key restricted to the demo rate limit.
 
 ## License 
 Copyright 2023 wavesforweirdos
