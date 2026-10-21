@@ -8,7 +8,7 @@
     <p v-else-if="error" class="status">Could not load photos. Please try again.</p>
     <p v-else-if="!photos.length" class="status">No photos found.</p>
     <div class="gallery">
-      <router-link v-for="photo in photos" :key="photo.id" :to="`/photo/${photo.id}`"
+      <router-link v-for="photo in photos" :key="photo.id" :to="{ path: `/photo/${photo.id}`, query: $route.query }"
         v-bind:class="bindPhotoClass(photo.likes)">
         <div class="information">
           <div class="description">{{ showDescription(photo) }}</div>
@@ -31,7 +31,7 @@ export default {
       description: '',
       city: '',
       accesKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
-      query: 'random',
+      query: this.$route.query.q || 'random',
       loading: false,
       error: false,
       url: 'https://api.unsplash.com/search/photos',
@@ -40,6 +40,7 @@ export default {
   methods: {
     search() {
       this.query = this.query.trim() || 'random'
+      this.$router.replace({ query: { q: this.query } })
       this.fetchPhotos()
     },
     fetchPhotos() {

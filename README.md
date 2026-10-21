@@ -8,6 +8,8 @@
 
 Gallery built with Vue 3, Vue Router and Vite that browses photos from the [Unsplash API](https://unsplash.com/developers). Click a photo to see its detail.
 
+![Photo Gallery screenshot](docs/screenshot.jpg)
+
 ## Features
 
 - Search Unsplash photos by keyword (30 results per search)
