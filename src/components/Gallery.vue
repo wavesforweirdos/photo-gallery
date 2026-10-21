@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <main class="container">
+    <h1 class="sr-only">Photo Gallery</h1>
     <form class="search" @submit.prevent="search">
       <input v-model="query" type="search" placeholder="Search photos (e.g. mountains)" aria-label="Search photos">
       <button v-if="query" type="button" class="clear" aria-label="Clear search" @click="clear">✕</button>
@@ -8,13 +9,14 @@
     <p v-if="error" class="status error" role="alert">{{ error }}</p>
     <p v-else-if="!loading && !photos.length" class="status">No photos found.</p>
     <div class="gallery" :aria-busy="loading">
-      <router-link v-for="photo in photos" :key="photo.id" :to="{ path: `/photo/${photo.id}`, query: $route.query }"
+      <router-link v-for="(photo, index) in photos" :key="photo.id" :to="{ path: `/photo/${photo.id}`, query: $route.query }"
         :class="photo.size">
         <div class="information">
           <div class="description">{{ showDescription(photo) }}</div>
           <div class="username">@{{ photo.user.username }}</div>
         </div>
-        <img :src="photo.urls.small" :alt="photo.alt_description || ''" loading="lazy">
+        <img :src="thumb(photo, 400)" :srcset="srcset(photo)" :sizes="sizes(photo)" :alt="photo.alt_description || ''"
+          :loading="index < 4 ? 'eager' : 'lazy'" :fetchpriority="index === 0 ? 'high' : undefined">
       </router-link>
       <template v-if="loading && !photos.length">
         <div v-for="n in 12" :key="`skeleton-${n}`" class="skeleton"></div>
@@ -26,12 +28,14 @@
     <p class="credit">
       Photos from <a :href="unsplashUrl" target="_blank" rel="noopener">Unsplash</a>
     </p>
-  </div>
+  </main>
 </template>
 
 <script>
 import { unsplashGet, errorMessage, UNSPLASH_URL } from '../unsplash'
 import { assignSizes } from '../sizes'
+
+const THUMB_WIDTHS = [400, 800, 1200]
 
 const PER_PAGE = 30
 
@@ -81,6 +85,19 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    // Unsplash resizes on the fly through the `raw` URL, so the grid never downloads full-size images
+    thumb(photo, width) {
+      return `${photo.urls.raw}&w=${width}&q=70&fm=webp&fit=max`
+    },
+    srcset(photo) {
+      return THUMB_WIDTHS.map(width => `${this.thumb(photo, width)} ${width}w`).join(', ')
+    },
+    sizes(photo) {
+      // Wide tiles span two columns
+      return photo.size === 'wide'
+        ? '(max-width: 768px) 100vw, 50vw'
+        : '(max-width: 768px) 50vw, 25vw'
     },
     showDescription(photo) {
       const text = photo.description && photo.description.length < 150
@@ -258,7 +275,7 @@ export default {
 
 .username {
   font-size: x-small;
-  opacity: 60%;
+  opacity: 85%;
 }
 
 @media (max-width: 768px) {

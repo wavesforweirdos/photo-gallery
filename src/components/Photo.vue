@@ -13,6 +13,7 @@
                     on
                     <a :href="unsplashUrl" target="_blank" rel="noopener">Unsplash</a>
                 </p>
+                <button ref="close" type="button" class="image-close" @click="closeImagebox">Close</button>
             </div>
         </div>
     </div>
@@ -59,8 +60,8 @@ export default {
         this.fetchPhoto()
     },
     mounted() {
-        // Focus the dialog so Esc works right away
-        this.$refs.box.focus()
+        // Move focus into the dialog so keyboard users land on the close button and Esc works right away
+        this.$refs.close.focus()
     },
 }
 </script>
@@ -104,6 +105,23 @@ export default {
     width: 0;
     min-width: 100%;
     box-sizing: border-box;
+}
+
+.image-close {
+    margin-top: 1rem;
+    padding: 10px 24px;
+    border: 2px solid #111111;
+    border-radius: 15px;
+    background-color: transparent;
+    color: #111111;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.image-close:hover {
+    background-color: #111111;
+    color: #FFFFFF;
 }
 
 .image-error {
