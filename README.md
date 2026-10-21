@@ -12,10 +12,11 @@ Gallery built with Vue 3, Vue Router and Vite that browses photos from the [Unsp
 
 ## Features
 
-- Search Unsplash photos by keyword (30 results per search)
-- Grid with lightweight thumbnails; cell size depends on the photo's likes
-- Photo detail view with description, location and author link
-- Loading, empty and error states
+- Search Unsplash photos by keyword, with the term kept in the URL so searches can be shared
+- "Load more" pagination (30 photos per page)
+- Grid with lightweight thumbnails and loading skeletons; cell size depends on the photo's likes
+- Photo detail view with description, location and author attribution; close it with `Esc`
+- Clear messages for empty results, errors and Unsplash's rate limit (50 requests/hour in demo mode)
 
 ## Getting started
 
@@ -33,3 +34,4 @@ npm run dev
 | `npm run build` | Production build into `dist/` |
 | `npm run preview` | Preview the production build |
 | `npm run lint` | Lint with [ESLint](https://eslint.org/) |
+| `npm test` | Run the [Vitest](https://vitest.dev/) test suite |

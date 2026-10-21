@@ -7,6 +7,10 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
   plugins: [vue()],
+  test: {
+    environment: 'jsdom',
+    env: { VITE_UNSPLASH_ACCESS_KEY: 'test-key' },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
