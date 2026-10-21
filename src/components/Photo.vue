@@ -1,6 +1,7 @@
 <template>
     <div ref="box" class="image-box" role="dialog" aria-modal="true" aria-label="Photo detail" tabindex="-1"
         @click.self="closeImagebox" @keydown.esc="closeImagebox">
+        <div class="image-dialog">
         <div class="image-content">
             <p v-if="error" class="image-error" role="alert">{{ error }}</p>
             <img v-else-if="photoURL" :src="photoURL" :alt="description">
@@ -13,8 +14,9 @@
                     on
                     <a :href="unsplashUrl" target="_blank" rel="noopener">Unsplash</a>
                 </p>
-                <button ref="close" type="button" class="image-close" @click="closeImagebox">Close</button>
             </div>
+        </div>
+        <button ref="close" type="button" class="image-close" aria-label="Close photo" @click="closeImagebox">✕</button>
         </div>
     </div>
 </template>
@@ -83,19 +85,26 @@ export default {
 }
 
 /* The card is as wide as the photo, so the caption matches its width */
+.image-dialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    margin: auto 0;
+}
+
 .image-content {
     display: flex;
     flex-direction: column;
     width: fit-content;
     max-width: 100%;
-    margin: auto 0;
 }
 
 .image-content img {
     display: block;
     width: auto;
     max-width: 100%;
-    max-height: 75vh;
+    max-height: 70vh;
 }
 
 .image-info {
@@ -108,20 +117,29 @@ export default {
 }
 
 .image-close {
+    flex: none;
+    width: 3rem;
+    height: 3rem;
     margin-top: 1rem;
-    padding: 10px 24px;
-    border: 2px solid #111111;
-    border-radius: 15px;
-    background-color: transparent;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: #FFFFFF;
     color: #111111;
     font: inherit;
-    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1;
     cursor: pointer;
 }
 
 .image-close:hover {
-    background-color: #111111;
-    color: #FFFFFF;
+    background-color: #DDDDDD;
+}
+
+/* The page's dark focus ring would vanish on the dark overlay */
+.image-close:focus-visible {
+    outline: 3px solid #FFFFFF;
+    outline-offset: 3px;
 }
 
 .image-error {
