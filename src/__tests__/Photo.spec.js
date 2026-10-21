@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { RouterView, createMemoryHistory, createRouter } from 'vue-router'
 import Photo from '../components/Photo.vue'
 
 const json = {
@@ -65,5 +65,25 @@ describe('Photo', () => {
     await wrapper.find('.image-box').trigger('keydown', { key: 'Escape' })
     await flushPromises()
     expect(router.currentRoute.value.path).toBe('/')
+  })
+
+  it('loads the new photo when only the id in the URL changes', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [{ path: '/photo/:id', component: Photo }],
+    })
+    router.push('/photo/a')
+    await router.isReady()
+    mount({ components: { RouterView }, template: '<RouterView />' }, {
+      attachTo: document.body,
+      global: { plugins: [router] },
+    })
+    await flushPromises()
+
+    await router.push('/photo/b')
+    await flushPromises()
+
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(fetch.mock.lastCall[0]).toContain('/photos/b')
   })
 })

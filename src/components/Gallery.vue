@@ -131,6 +131,7 @@ export default {
 
 .search input {
   flex: 1;
+  min-width: 0; /* lets the input shrink so the form never overflows on narrow screens */
   padding: 13px 20px;
   border-radius: 15px;
   border: 2px solid black;
