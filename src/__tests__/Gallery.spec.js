@@ -8,7 +8,7 @@ const photo = (id) => ({
   likes: 100,
   description: `Photo ${id}`,
   alt_description: null,
-  urls: { small: `https://img/${id}.jpg` },
+  urls: { raw: `https://img/${id}?ixid=abc`, small: `https://img/${id}.jpg` },
   user: { username: 'jane' },
 })
 
@@ -66,6 +66,17 @@ describe('Gallery', () => {
     expect(fetch).toHaveBeenCalledTimes(1)
     expect(fetch.mock.calls[0][0]).toContain('query=red')
     expect(wrapper.find('input').element.value).toBe('red')
+  })
+
+  it('has a main landmark and serves resized responsive thumbnails', async () => {
+    fetch.mockResolvedValue(response({ results: [photo('a')], total_pages: 1 }))
+    const { wrapper } = await mountGallery()
+    const img = wrapper.find('.gallery img')
+
+    expect(wrapper.find('main h1').exists()).toBe(true)
+    expect(img.attributes('src')).toContain('w=400')
+    expect(img.attributes('srcset')).toContain('1200w')
+    expect(img.attributes('loading')).toBe('eager')
   })
 
   it('searches, keeps the term in the URL and clears it', async () => {

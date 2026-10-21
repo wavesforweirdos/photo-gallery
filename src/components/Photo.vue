@@ -2,6 +2,7 @@
     <div ref="box" class="image-box" role="dialog" aria-modal="true" aria-label="Photo detail" tabindex="-1"
         @click.self="closeImagebox" @keydown.esc="closeImagebox">
         <div class="image-content">
+            <button ref="close" type="button" class="image-close" aria-label="Close photo" @click="closeImagebox">✕</button>
             <p v-if="error" class="image-error" role="alert">{{ error }}</p>
             <img v-else-if="photoURL" :src="photoURL" :alt="description">
             <div class="image-info">
@@ -59,8 +60,8 @@ export default {
         this.fetchPhoto()
     },
     mounted() {
-        // Focus the dialog so Esc works right away
-        this.$refs.box.focus()
+        // Move focus into the dialog so keyboard users land on the close button and Esc works right away
+        this.$refs.close.focus()
     },
 }
 </script>
@@ -83,6 +84,7 @@ export default {
 
 /* The card is as wide as the photo, so the caption matches its width */
 .image-content {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: fit-content;
@@ -104,6 +106,25 @@ export default {
     width: 0;
     min-width: 100%;
     box-sizing: border-box;
+}
+
+.image-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #111111;
+    font: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.image-close:hover {
+    background-color: #FFFFFF;
 }
 
 .image-error {
