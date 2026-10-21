@@ -51,6 +51,23 @@ describe('Gallery', () => {
     expect(wrapper.findAll('.gallery > a')).toHaveLength(2)
   })
 
+  it('reads the search term from the URL even when mounted before the router is ready', async () => {
+    fetch.mockResolvedValue(response({ results: [photo('a')], total_pages: 1 }))
+    const history = createMemoryHistory()
+    history.replace('/?q=red') // like opening a shared link: the first navigation already carries ?q=
+    const router = createRouter({
+      history,
+      routes: [{ path: '/', component: { template: '<div />' } }],
+    })
+    const wrapper = mount(Gallery, { global: { plugins: [router] } })
+    await router.isReady()
+    await flushPromises()
+
+    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(fetch.mock.calls[0][0]).toContain('query=red')
+    expect(wrapper.find('input').element.value).toBe('red')
+  })
+
   it('searches, keeps the term in the URL and clears it', async () => {
     fetch.mockResolvedValue(response({ results: [photo('a')], total_pages: 1 }))
     const { wrapper, router } = await mountGallery()
