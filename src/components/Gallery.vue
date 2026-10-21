@@ -1,8 +1,12 @@
 <template>
   <div class="container">
-    <div class="addPhoto">
-      <router-link to="#">Cargar una nueva imagen</router-link>
-    </div>
+    <form class="search" @submit.prevent="search">
+      <input v-model="query" type="search" placeholder="Search photos (e.g. mountains)" aria-label="Search photos">
+      <button type="submit">Search</button>
+    </form>
+    <p v-if="loading" class="status">Loading…</p>
+    <p v-else-if="error" class="status">Could not load photos. Please try again.</p>
+    <p v-else-if="!photos.length" class="status">No photos found.</p>
     <div class="gallery">
       <router-link v-for="photo in photos" :key="photo.id" :to="`/photo/${photo.id}`"
         v-bind:class="bindPhotoClass(photo.likes)">
@@ -10,7 +14,7 @@
           <div class="description">{{ showDescription(photo) }}</div>
           <div class="username">@{{ photo.user.username }}</div>
         </div>
-        <img :src="photo.urls.full">
+        <img :src="photo.urls.small" :alt="photo.alt_description || ''" loading="lazy">
       </router-link>
     </div>
   </div>
@@ -27,18 +31,37 @@ export default {
       description: '',
       city: '',
       accesKey: import.meta.env.VITE_UNSPLASH_ACCESS_KEY,
-      url: 'https://api.unsplash.com/search/photos?per_page=30&oder_by=oldest&query=random&client_id=',
+      query: 'random',
+      loading: false,
+      error: false,
+      url: 'https://api.unsplash.com/search/photos',
     }
   },
   methods: {
-    fetchRandomPhoto() {
-      fetch(this.url + this.accesKey)
-        .then(response => response.json())
+    search() {
+      this.query = this.query.trim() || 'random'
+      this.fetchPhotos()
+    },
+    fetchPhotos() {
+      const params = new URLSearchParams({
+        per_page: 30,
+        query: this.query,
+        client_id: this.accesKey,
+      })
+      this.loading = true
+      this.error = false
+      fetch(`${this.url}?${params}`)
+        .then(response => {
+          if (!response.ok) throw new Error(response.status)
+          return response.json()
+        })
         .then((json) => {
-          console.log(json)
           this.photos = json.results
-        }).catch((err) => {
-          console.log('error', err)
+        }).catch(() => {
+          this.photos = []
+          this.error = true
+        }).finally(() => {
+          this.loading = false
         })
     },
     bindPhotoClass(likes) {
@@ -65,7 +88,7 @@ export default {
     },
   },
   created() {
-    this.fetchRandomPhoto();
+    this.fetchPhotos()
   },
 
 }
@@ -76,52 +99,41 @@ export default {
   margin: 5rem;
 }
 
-/* Button addPhoto */
+/* Search */
 
-.addPhoto {
-  padding: 13px 20px;
+.search {
+  display: flex;
+  gap: 0.75rem;
   margin-bottom: 20px;
+}
+
+.search input {
+  flex: 1;
+  padding: 13px 20px;
   border-radius: 15px;
   border: 2px solid black;
+  font: inherit;
+}
+
+.search button {
+  padding: 13px 20px;
+  border-radius: 15px;
+  border: 2px solid black;
+  background-color: slateblue;
+  color: white;
+  font: inherit;
+  font-weight: 600;
   cursor: pointer;
-  position: relative;
-  background-color: rgba(0, 0, 0, 0);
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
+}
+
+.search button:hover {
+  opacity: 0.85;
+}
+
+.status {
   text-align: center;
 }
 
-.addPhoto>a {
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: black;
-}
-
-.addPhoto:after {
-  content: "";
-  background-color: slateblue;
-  opacity: 10%;
-  border-radius: 15px;
-  width: 100%;
-  z-index: -1;
-  position: absolute;
-  height: 100%;
-  top: 7px;
-  left: 7px;
-  transition: 0.2s;
-}
-
-.addPhoto:hover:after {
-  top: 0px;
-  left: 0px;
-}
-
-.addPhoto:active:after{
-  background-color: slateblue;
-  opacity: 50%;
-}
 /* Gallery */
 
 .gallery {

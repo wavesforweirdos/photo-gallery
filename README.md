@@ -6,7 +6,18 @@
 
 **Demo:** https://wavesforweirdos.github.io/photo-gallery/
 
-Gallery built with Vue 3, Vue Router and Vite that browses photos from the [Unsplash API](https://unsplash.com/developers). Click a photo to see its detail.
+Gallery built with Vue 3, Vue Router and Vite that browses photos from the [Unsplash API](https://unsplash.com/developers). 
+## Features
+
+- Search Unsplash photos by keyword (30 results per search)
+- Grid with lightweight thumbnails; cell size depends on the photo's likes
+- Photo detail view with description, location and author link
+- Loading, empty and error states
+
+## Branching
+
+`main` is the deployed branch, `dev` is where work happens, and changes land through short-lived `feature/*` and `fix/*` branches opened as pull requests into `dev`.
+
 
 ## Getting started
 
